@@ -1,3 +1,5 @@
+Disclaimer : This work is base on EmbarsArc's gym rocket lander. I have only changed parts to be able to tweak the difficulty.
+SOURCE : https://github.com/EmbersArc/gym_rocketLander
 Since this seems to be getting some more attention I've updated it to the latest version of Gym. I hope everything still works, let me know if it doesn't. Pull requests are always welcome. Happy training!
 
 # ![GIF](https://thumbs.gfycat.com/CoarseEmbellishedIsopod-max-14mb.gif)
