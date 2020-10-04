@@ -1,4 +1,6 @@
 import numpy as np
+import os
+import pyglet
 import Box2D
 from Box2D.b2 import (
     edgeShape,
@@ -12,6 +14,7 @@ from Box2D.b2 import (
 import gym
 from gym import spaces
 from gym.utils import seeding
+
 
 """
 
@@ -49,7 +52,7 @@ Continuous control inputs are:
 
 """
 
-CONTINUOUS = True
+CONTINUOUS = False
 VEL_STATE = True  # Add velocity info to state
 FPS = 60
 SCALE_S = 0.35  # Temporal Scaling, lower is faster - adjust forces appropriately
@@ -71,7 +74,7 @@ ENGINE_WIDTH = ENGINE_HEIGHT * 0.7
 THRUSTER_HEIGHT = ROCKET_HEIGHT * 0.86
 
 # LEGS
-LEG_LENGTH = ROCKET_WIDTH * 2.2
+LEG_LENGTH = ROCKET_WIDTH * 4.2
 BASE_ANGLE = -0.27
 SPRING_ANGLE = 0.27
 LEG_AWAY = ROCKET_WIDTH / 2
@@ -513,6 +516,7 @@ class RocketLander(gym.Env):
         if self.viewer is None:
 
             self.viewer = rendering.Viewer(VIEWPORT_W, VIEWPORT_H)
+
             self.viewer.set_bounds(0, W, 0, H)
 
             sky = rendering.FilledPolygon(((0, 0), (0, H), (W, H), (W, 0)))
