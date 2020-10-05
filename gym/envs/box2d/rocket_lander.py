@@ -138,7 +138,6 @@ class RocketLander(gym.Env):
         self.engine = None
         self.ship = None
         self.legs = []
-
         high = np.array([1, 1, 1, 1, 1, 1, 1, np.inf, np.inf, np.inf], dtype=np.float32)
         low = -high
         if not VEL_STATE:
@@ -452,7 +451,7 @@ class RocketLander(gym.Env):
         outside = abs(pos.x - W / 2) > W / 2 or pos.y > H
         fuelcost = 0.1 * (0 * self.power + abs(self.force_dir)) / FPS
         landed = (
-            self.legs[0].ground_contact and self.legs[1].ground_contact and speed < 1
+            self.legs[0].ground_contact and self.legs[1].ground_contact and speed < 10
         )
         done = False
 
@@ -481,11 +480,13 @@ class RocketLander(gym.Env):
             if self.legs[0].ground_contact:
                 reward += 100
             if landed:
+                # print("short landing")
                 self.landed_ticks += 1
                 reward += 1000
             else:
                 self.landed_ticks = 0
             if self.landed_ticks == FPS:
+                # print("full landing")
                 reward = 100000
                 done = True
         if x_distance < 0.90 * (SHIP_WIDTH / 2):
