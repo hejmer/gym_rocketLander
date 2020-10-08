@@ -138,7 +138,10 @@ class RocketLander(gym.Env):
         self.engine = None
         self.ship = None
         self.legs = []
-        high = np.array([1, 1, 1, 1, 1, 1, 1, np.inf, np.inf, np.inf], dtype=np.float32)
+        almost_inf = 99999999
+        high = np.array(
+            [1, 1, 1, 1, 1, 1, 1, almost_inf, almost_inf, almost_inf], dtype=np.float32
+        )
         low = -high
         if not VEL_STATE:
             high = high[0:7]
@@ -486,7 +489,6 @@ class RocketLander(gym.Env):
             else:
                 self.landed_ticks = 0
             if self.landed_ticks == FPS:
-                # print("full landing")
                 reward = 100000
                 done = True
         if x_distance < 0.90 * (SHIP_WIDTH / 2):
