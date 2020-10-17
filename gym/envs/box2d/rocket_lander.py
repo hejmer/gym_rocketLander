@@ -16,6 +16,13 @@ from gym import spaces
 from gym.utils import seeding
 
 
+def compute_leg_length(LEG_LENGTH, level):
+    if level > 2:
+        return LEG_LENGTH * 0.1
+    else:
+        return LEG_LENGTH
+
+
 """
 
 The objective of this environment is to land a rocket on a ship.
@@ -127,7 +134,8 @@ class ContactDetector(contactListener):
 class RocketLander(gym.Env):
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": FPS}
 
-    def __init__(self):
+    def __init__(self, level_number=0):
+        self.level_number = level_number
         self._seed()
         self.viewer = None
         self.episode_number = 0
@@ -267,8 +275,17 @@ class RocketLander(gym.Env):
 
         self.ship.color1 = (0.2, 0.2, 0.2)
 
-        initial_x = W / 2 + W * np.random.uniform(-0.03, 0.03)
-        initial_y = H * 0.95
+        def initial_rocket_pos(level):
+
+            if level > 0:
+                initial_x = W / 2 + W * np.random.uniform(-0.3, 0.3)
+                initial_y = H * 0.95
+            else:
+                initial_x = W / 2 + W * np.random.uniform(-0.03, 0.03)
+                initial_y = H * 0.95
+            return initial_x, initial_y
+
+        initial_x, initial_y = initial_rocket_pos(self.level_number)
         self.lander = self.world.CreateDynamicBody(
             position=(initial_x, initial_y),
             angle=0.0,
@@ -291,6 +308,7 @@ class RocketLander(gym.Env):
 
         self.lander.color1 = rgb(230, 230, 230)
 
+        leg_length_modified = compute_leg_length(LEG_LENGTH, self.level_number)
         for i in [-1, +1]:
             leg = self.world.CreateDynamicBody(
                 position=(initial_x - i * LEG_AWAY, initial_y + ROCKET_WIDTH * 0.2),
@@ -299,10 +317,10 @@ class RocketLander(gym.Env):
                     shape=polygonShape(
                         vertices=(
                             (0, 0),
-                            (0, LEG_LENGTH / 25),
-                            (i * LEG_LENGTH, 0),
-                            (i * LEG_LENGTH, -LEG_LENGTH / 20),
-                            (i * LEG_LENGTH / 3, -LEG_LENGTH / 7),
+                            (0, leg_length_modified / 25),
+                            (i * leg_length_modified, 0),
+                            (i * leg_length_modified, -leg_length_modified / 20),
+                            (i * leg_length_modified / 3, -leg_length_modified / 7),
                         )
                     ),
                     density=1,
@@ -328,7 +346,7 @@ class RocketLander(gym.Env):
                 bodyA=self.lander,
                 bodyB=leg,
                 anchorA=(i * LEG_AWAY, ROCKET_HEIGHT / 8),
-                anchorB=leg.fixtures[0].body.transform * (i * LEG_LENGTH, 0),
+                anchorB=leg.fixtures[0].body.transform * (i * leg_length_modified, 0),
                 collideConnected=False,
                 frequencyHz=0.01,
                 dampingRatio=0.9,
@@ -344,15 +362,27 @@ class RocketLander(gym.Env):
 
             self.legs.append(leg)
 
+        def random_factor_velocity(INITIAL_RANDOM, level):
+            if level > 1:
+                return INITIAL_RANDOM + 0.2
+            else:
+                return INITIAL_RANDOM
+
+        random_velocity_factor = random_factor_velocity(
+            INITIAL_RANDOM, self.level_number
+        )
+
         self.lander.linearVelocity = (
-            -self.np_random.uniform(0, INITIAL_RANDOM)
+            -self.np_random.uniform(0, random_velocity_factor)
             * START_SPEED
             * (initial_x - W / 2)
             / W,
             -START_SPEED,
         )
 
-        self.lander.angularVelocity = (1 + INITIAL_RANDOM) * np.random.uniform(-1, 1)
+        self.lander.angularVelocity = (1 + random_velocity_factor) * np.random.uniform(
+            -1, 1
+        )
 
         self.drawlist = (
             self.legs + [self.water] + [self.ship] + self.containers + [self.lander]
@@ -440,7 +470,6 @@ class RocketLander(gym.Env):
             state.extend([vel_l[0], vel_l[1], vel_a])
 
         # REWARD -------------------------------------------------------------------------------------------------------
-
         # state variables for reward
         distance = np.linalg.norm(
             (3 * x_distance, y_distance)
@@ -454,7 +483,7 @@ class RocketLander(gym.Env):
         outside = abs(pos.x - W / 2) > W / 2 or pos.y > H
         fuelcost = 0.1 * (0 * self.power + abs(self.force_dir)) / FPS
         landed = (
-            self.legs[0].ground_contact and self.legs[1].ground_contact and speed < 10
+            self.legs[0].ground_contact and self.legs[1].ground_contact and speed < 1
         )
         done = False
 
@@ -636,7 +665,8 @@ class RocketLander(gym.Env):
             path = [
                 self.lander.fixtures[0].body.transform
                 * (l[1] * ROCKET_WIDTH / 2, ROCKET_HEIGHT / 8),
-                l[0].fixtures[0].body.transform * (l[1] * LEG_LENGTH * 0.8, 0),
+                l[0].fixtures[0].body.transform
+                * (l[1] * compute_leg_length(LEG_LENGTH, self.level_number) * 0.8, 0),
             ]
             self.viewer.draw_polyline(
                 path, color=self.ship.color1, linewidth=1 if START_HEIGHT > 500 else 2
