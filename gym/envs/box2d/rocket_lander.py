@@ -59,7 +59,7 @@ Continuous control inputs are:
 
 """
 
-CONTINUOUS = False
+CONTINUOUS = True
 VEL_STATE = True  # Add velocity info to state
 FPS = 60
 SCALE_S = 0.35  # Temporal Scaling, lower is faster - adjust forces appropriately
@@ -72,7 +72,7 @@ START_SPEED = 40.0
 MIN_THROTTLE = 0.4
 GIMBAL_THRESHOLD = 0.4
 MAIN_ENGINE_POWER = 1600 * SCALE_S * 1.0
-SIDE_ENGINE_POWER = 100 / FPS * SCALE_S
+SIDE_ENGINE_POWER = 100 / FPS * SCALE_S * 2.0
 
 ROCKET_WIDTH = 3.66 * SCALE_S
 ROCKET_HEIGHT = ROCKET_WIDTH / 3.7 * 47.9
@@ -158,7 +158,7 @@ class RocketLander(gym.Env):
         self.observation_space = spaces.Box(low, high, dtype=np.float32)
 
         if CONTINUOUS:
-            self.action_space = spaces.Box(-1.0, +1.0, (3,), dtype=np.float32)
+            self.action_space = spaces.Box(-1, +1, (3,), dtype=np.float32)
         else:
             self.action_space = spaces.Discrete(7)
 
