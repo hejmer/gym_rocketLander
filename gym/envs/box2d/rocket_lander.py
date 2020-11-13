@@ -146,7 +146,7 @@ class RocketLander(gym.Env):
         self.engine = None
         self.ship = None
         self.legs = []
-        almost_inf = 99999999
+        almost_inf = 9999
         high = np.array(
             [1, 1, 1, 1, 1, 1, 1, almost_inf, almost_inf, almost_inf], dtype=np.float32
         )
