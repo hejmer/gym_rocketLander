@@ -146,6 +146,7 @@ class RocketLander(gym.Env):
         self.engine = None
         self.ship = None
         self.legs = []
+        self.state = []
         almost_inf = 9999
         high = np.array(
             [1, 1, 1, 1, 1, 1, 1, almost_inf, almost_inf, almost_inf], dtype=np.float32
@@ -468,7 +469,7 @@ class RocketLander(gym.Env):
         ]
         if VEL_STATE:
             state.extend([vel_l[0], vel_l[1], vel_a])
-
+        self.state = state
         # REWARD -------------------------------------------------------------------------------------------------------
         # state variables for reward
         distance = np.linalg.norm(
