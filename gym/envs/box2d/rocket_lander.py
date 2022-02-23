@@ -482,10 +482,12 @@ class RocketLander(gym.Env):
         )  # weight x position more
         speed = np.linalg.norm(vel_l)
         groundcontact = self.legs[0].ground_contact or self.legs[1].ground_contact
-        brokenleg = False
-        # (
-        #     self.legs[0].joint.angle < 0 or self.legs[1].joint.angle > -0
-        # ) and groundcontact
+        y_abs_speed = vel_l[1] * np.sin(angle)
+        brokenleg = (
+            self.legs[0].joint.angle < 0 or self.legs[1].joint.angle > -0
+        ) and groundcontact
+        # if groundcontact and abs(y_abs_speed) > self.speed_threshold:
+        #     brokenleg = True
         outside = abs(pos.x - W / 2) > W / 2 or pos.y > H
         fuelcost = 0.1 * (0 * self.power + abs(self.force_dir)) / FPS
         landed = (
@@ -496,8 +498,6 @@ class RocketLander(gym.Env):
         done = False
 
         reward = -fuelcost
-
-        y_abs_speed = vel_l[1] * np.sin(angle)
 
         if outside or brokenleg:
             self.game_over = True
