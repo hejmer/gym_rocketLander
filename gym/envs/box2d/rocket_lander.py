@@ -134,7 +134,7 @@ class ContactDetector(contactListener):
 class RocketLander(gym.Env):
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": FPS}
 
-    def __init__(self, level_number=0, continuous=True, speed_threshold=0.3):
+    def __init__(self, level_number=0, continuous=True, speed_threshold=1):
         self.level_number = level_number
         self._seed()
         self.viewer = None
@@ -524,13 +524,14 @@ class RocketLander(gym.Env):
                 # print("short landing")
                 self.landed_ticks += 1
                 reward += 1000
-                if self.landed_ticks > 59:
-                    self.good_landings += 1
+
             else:
                 self.landed_ticks = 0
             if self.landed_ticks == FPS:
                 reward = 100000
+                self.good_landings += 1
                 done = True
+
         if x_distance < 0.90 * (SHIP_WIDTH / 2):
             reward += 0.01
         if done:
