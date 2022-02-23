@@ -485,9 +485,9 @@ class RocketLander(gym.Env):
         groundcontact = self.legs[0].ground_contact or self.legs[1].ground_contact
         y_abs_speed = vel_l[1] * np.sin(angle)
         brokenleg = False
-        # brokenleg = (
-        #     self.legs[0].joint.angle < 0 or self.legs[1].joint.angle > -0
-        # ) and groundcontact
+        brokenleg = (
+            self.legs[0].joint.angle < 0 or self.legs[1].joint.angle > -0
+        ) and groundcontact
         # if groundcontact and abs(y_abs_speed) > self.speed_threshold:
         #     brokenleg = True
         outside = abs(pos.x - W / 2) > W / 2 or pos.y > H
@@ -524,7 +524,7 @@ class RocketLander(gym.Env):
             if self.landed:
                 # print("short landing")
                 self.landed_ticks += 1
-                reward += 1000
+                reward += 1
 
             else:
                 self.landed_ticks = 0
@@ -532,7 +532,7 @@ class RocketLander(gym.Env):
                 print("GOOD LANDING")
                 self.good_landings += 1
             if self.landed_ticks == FPS:
-                reward = 100000
+                reward = 1
 
                 done = True
 
