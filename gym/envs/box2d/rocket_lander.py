@@ -523,14 +523,14 @@ class RocketLander(gym.Env):
             if landed:
                 # print("short landing")
                 self.landed_ticks += 1
-                self.good_landings += 1
                 reward += 1000
 
             else:
                 self.landed_ticks = 0
+
             if self.landed_ticks == FPS:
                 reward = 100000
-
+                self.good_landings += 1
                 done = True
 
         if x_distance < 0.90 * (SHIP_WIDTH / 2):
