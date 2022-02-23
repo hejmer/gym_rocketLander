@@ -134,7 +134,7 @@ class ContactDetector(contactListener):
 class RocketLander(gym.Env):
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": FPS}
 
-    def __init__(self, level_number=0):
+    def __init__(self, level_number=0, continuous=True, speed_threshold=0.3):
         self.level_number = level_number
         self._seed()
         self.viewer = None
@@ -147,8 +147,10 @@ class RocketLander(gym.Env):
         self.ship = None
         self.legs = []
         self.state = []
+        self.continuous = continuous
         self.landed_fraction = []
         self.good_landings = 0
+        self.speed_threshold = speed_threshold
         almost_inf = 9999
         high = np.array(
             [1, 1, 1, 1, 1, 1, 1, almost_inf, almost_inf, almost_inf], dtype=np.float32
@@ -160,7 +162,7 @@ class RocketLander(gym.Env):
 
         self.observation_space = spaces.Box(low, high, dtype=np.float32)
 
-        if CONTINUOUS:
+        if self.continuous:
             self.action_space = spaces.Box(-1, +1, (3,), dtype=np.float32)
         else:
             self.action_space = spaces.Discrete(7)
@@ -392,7 +394,7 @@ class RocketLander(gym.Env):
             self.legs + [self.water] + [self.ship] + self.containers + [self.lander]
         )
 
-        if CONTINUOUS:
+        if self.continuous:
             return self.step([0, 0, 0])[0]
         else:
             return self.step(6)[0]
@@ -401,7 +403,7 @@ class RocketLander(gym.Env):
 
         self.force_dir = 0
 
-        if CONTINUOUS:
+        if self.continuous:
             np.clip(action, -1, 1)
             self.gimbal += action[0] * 0.15 / FPS
             self.throttle += action[1] * 0.5 / FPS
@@ -487,7 +489,9 @@ class RocketLander(gym.Env):
         outside = abs(pos.x - W / 2) > W / 2 or pos.y > H
         fuelcost = 0.1 * (0 * self.power + abs(self.force_dir)) / FPS
         landed = (
-            self.legs[0].ground_contact and self.legs[1].ground_contact and speed < 1
+            self.legs[0].ground_contact
+            and self.legs[1].ground_contact
+            and speed < self.speed_threshold
         )
         done = False
 
