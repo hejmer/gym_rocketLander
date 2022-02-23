@@ -147,6 +147,8 @@ class RocketLander(gym.Env):
         self.ship = None
         self.legs = []
         self.state = []
+        self.landed_fraction = []
+        self.good_landings = 0
         almost_inf = 9999
         high = np.array(
             [1, 1, 1, 1, 1, 1, 1, almost_inf, almost_inf, almost_inf], dtype=np.float32
@@ -197,6 +199,7 @@ class RocketLander(gym.Env):
         self.landed_ticks = 0
         self.stepnumber = 0
         self.smoke = []
+        self.episode_number += 1
 
         # self.terrainheigth = self.np_random.uniform(H / 20, H / 10)
         self.terrainheigth = H / 20
@@ -516,6 +519,8 @@ class RocketLander(gym.Env):
                 # print("short landing")
                 self.landed_ticks += 1
                 reward += 1000
+                if self.landed_ticks > 59:
+                    self.good_landings += 1
             else:
                 self.landed_ticks = 0
             if self.landed_ticks == FPS:
