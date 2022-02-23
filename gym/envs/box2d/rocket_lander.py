@@ -483,6 +483,7 @@ class RocketLander(gym.Env):
         speed = np.linalg.norm(vel_l)
         groundcontact = self.legs[0].ground_contact or self.legs[1].ground_contact
         y_abs_speed = vel_l[1] * np.sin(angle)
+        brokenleg = False
         # brokenleg = (
         #     self.legs[0].joint.angle < 0 or self.legs[1].joint.angle > -0
         # ) and groundcontact
