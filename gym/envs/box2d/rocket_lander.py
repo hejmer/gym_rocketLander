@@ -148,6 +148,7 @@ class RocketLander(gym.Env):
         self.legs = []
         self.state = []
         self.continuous = continuous
+        self.landed = False
         self.landed_fraction = []
         self.good_landings = 0
         self.speed_threshold = speed_threshold
@@ -491,7 +492,7 @@ class RocketLander(gym.Env):
         #     brokenleg = True
         outside = abs(pos.x - W / 2) > W / 2 or pos.y > H
         fuelcost = 0.1 * (0 * self.power + abs(self.force_dir)) / FPS
-        landed = (
+        self.landed = (
             self.legs[0].ground_contact
             and self.legs[1].ground_contact
             and speed < self.speed_threshold
@@ -520,7 +521,7 @@ class RocketLander(gym.Env):
                 reward += 100
             if self.legs[0].ground_contact:
                 reward += 100
-            if landed:
+            if self.landed:
                 # print("short landing")
                 self.landed_ticks += 1
                 reward += 1000
