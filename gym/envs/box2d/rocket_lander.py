@@ -529,6 +529,7 @@ class RocketLander(gym.Env):
             else:
                 self.landed_ticks = 0
             if self.landed_ticks > 59:
+                print("GOOD LANDING")
                 self.good_landings += 1
             if self.landed_ticks == FPS:
                 reward = 100000
