@@ -525,6 +525,7 @@ class RocketLander(gym.Env):
                 # print("short landing")
                 self.landed_ticks += 1
                 reward += 1
+                self.good_landings += 1
 
             else:
                 self.landed_ticks = 0
