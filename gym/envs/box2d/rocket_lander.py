@@ -519,22 +519,18 @@ class RocketLander(gym.Env):
             self.prev_shaping = shaping
             if self.legs[0].ground_contact:
                 reward += 100
-            if self.legs[0].ground_contact:
+            if self.legs[1].ground_contact:
                 reward += 100
             if self.landed:
                 # print("short landing")
                 self.landed_ticks += 1
                 reward += 1
-                self.good_landings += 1
 
             else:
                 self.landed_ticks = 0
-            if self.landed_ticks > 59:
-                print("GOOD LANDING")
-                self.good_landings += 1
             if self.landed_ticks == FPS:
                 reward = 1
-
+                self.good_landings += 1
                 done = True
 
         if x_distance < 0.90 * (SHIP_WIDTH / 2):
