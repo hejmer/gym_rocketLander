@@ -151,6 +151,7 @@ class RocketLander(gym.Env):
         self.landed = False
         self.landed_fraction = []
         self.good_landings = 0
+        self.short_landings = 0
         self.speed_threshold = speed_threshold
         almost_inf = 9999
         high = np.array(
@@ -523,7 +524,8 @@ class RocketLander(gym.Env):
                 reward += 100
             if self.landed:
                 # print("short landing")
-                self.landed_ticks += 1
+                self.short_landings += 1
+                self.landed_ticks += 1  
                 reward += 1
 
             else:
