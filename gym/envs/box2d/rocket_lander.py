@@ -151,7 +151,8 @@ class RocketLander(gym.Env):
         self.landed = False
         self.landed_fraction = []
         self.good_landings = 0
-        self.short_landings = 0
+        self.total_landed_ticks = 0
+        self.done = False
         self.speed_threshold = speed_threshold
         almost_inf = 9999
         high = np.array(
@@ -198,12 +199,13 @@ class RocketLander(gym.Env):
         self.world.contactListener = self.world.contactListener_keepref
         self.game_over = False
         self.prev_shaping = None
+        self.episode_number += 1
         self.throttle = 0
         self.gimbal = 0.0
+        self.total_landed_ticks += self.landed_ticks
         self.landed_ticks = 0
         self.stepnumber = 0
         self.smoke = []
-        self.episode_number += 1
 
         # self.terrainheigth = self.np_random.uniform(H / 20, H / 10)
         self.terrainheigth = H / 20
@@ -525,8 +527,6 @@ class RocketLander(gym.Env):
             if self.legs[1].ground_contact:
                 reward += 100
             if self.landed:
-                # print("short landing")
-                self.short_landings += 1
                 self.landed_ticks += 1
                 reward += 1
 
