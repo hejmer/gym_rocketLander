@@ -152,6 +152,7 @@ class RocketLander(gym.Env):
         self.landed_fraction = []
         self.good_landings = 0
         self.total_landed_ticks = 0
+        self.landed_ticks = 0
         self.done = False
         self.speed_threshold = speed_threshold
         almost_inf = 9999
