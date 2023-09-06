@@ -22,7 +22,7 @@ extras["all"] = all_deps
 
 setup(
     name="gym",
-    version="0.17.2",
+    version="0.21.0",
     description="The OpenAI Gym: A toolkit for developing and comparing your reinforcement learning agents.",
     url="https://github.com/openai/gym",
     author="OpenAI",
@@ -35,7 +35,7 @@ setup(
         "numpy>=1.10.4",
         "six",
         "pyglet>=1.2.0,<=1.3.2",
-        "cloudpickle~=1.2.0",
+        "cloudpickle~=1.5.0",
         'enum34~=1.1.6;python_version<"3.4"',
     ],
     extras_require=extras,
